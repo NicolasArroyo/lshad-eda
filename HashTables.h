@@ -1,12 +1,14 @@
 #ifndef LSHAD_EDA_HASHTABLES_H
 #define LSHAD_EDA_HASHTABLES_H
 
+#include <unordered_set>
 typedef long long ll;
 typedef long double ld;
 
 #include <vector>
 #include <random>
 #include <cmath>
+#include "hashes.h"
 #include <unordered_map>
 #include <algorithm>
 
@@ -104,6 +106,65 @@ public:
                 tables[t][hash_value[l]].push_back(x);
             }
         }
+    }
+    
+    ll countNeighbors(const vector<ld> &point){
+      ll count = 0;
+
+      // Using a set to store the neighbors without duplicates
+      unordered_set<vector<ld>, VectorHash, VectorEqual> neighbors;
+      neighbors.insert(point);
+      // Go trough all the tables
+      for (const auto &table: tables){
+          // Go through all the buckets in the hash table
+          for (const auto& bucket : table) {
+              // Find the point in the bucket
+              auto finded = find(bucket.second.begin(), bucket.second.end(), point);
+              // If the point is in the bucket, insert all the points in the bucket in the neighbors set
+              if(finded != bucket.second.end()){
+                  neighbors.insert(bucket.second.begin(), bucket.second.end());
+              }
+          }
+      }
+      
+      // Return the number of neighbors
+      return neighbors.size() - 1;
+    }
+
+    unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> HashAndEstimatePerHash(const vector<vector<ld>> &data) {
+        // Unordered map personalized for mapping each hash table to its estimator
+        unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash;
+
+        //Hashing the data points
+        for (ll i = 0; i < (ll) data.size(); ++i) {
+            insert(data[i]);
+        }
+        
+        // Generating the estimator for each hash table
+        for (const auto& table: tables) {
+            ld EA = 0, EB = 0;
+
+            for (const auto& bucket : table) {
+                // Calculating the number of elements in the bucket
+                EA += bucket.second.size();
+                
+                // Calculating the number of neighbors of each element in the bucket
+                for (const auto& point : bucket.second) {
+                    ll neighborCount = countNeighbors(point);
+                    EB += neighborCount;
+                }
+                // Computing the EB estimator
+                EB = EB / EA;
+            }
+
+            if (EB != 0) {
+                ld EC = EA / EB;
+                // Mapping the hash table to its estimator
+                estPerHash[table] = EC;
+            }
+        }
+
+        return estPerHash;
     }
 
     // ONLY FOR TESTING PURPOSES
