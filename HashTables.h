@@ -95,6 +95,21 @@ public:
         tables.resize(T);
     }
 
+    // Gets the total number of buckets in the hash tables and the sum of the sizes of all buckets
+    pair<ll, ll> getNumberBucketsAndSumBucketSizes() {
+        ll numberBuckets = 0;
+        ll sumBucketSizes = 0;
+
+        for (const auto &table: tables) {
+            for (const auto &bucket: table) {
+                numberBuckets++;
+                sumBucketSizes += bucket.second.size();
+            }
+        }
+
+        return make_pair(numberBuckets, sumBucketSizes);
+    }
+
     void insert(const vector<ld> &x) {
         // For each of the T hash tables...
         for (ll t = 0; t < T; ++t) {
