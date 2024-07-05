@@ -70,7 +70,7 @@ public:
   }
 
   // Training phase of the LSHAD algorithm
-  void train(const vector<vector<ld>> data, ll anomalyRatio){
+  void train(const vector<vector<ld>> data, ld anomalyRatio){
     tuple<ll, ll, ld> hyperparameters = tuneHyperparameters(data);
     ll L = get<0>(hyperparameters);
     ll T = get<1>(hyperparameters);
