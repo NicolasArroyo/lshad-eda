@@ -14,7 +14,7 @@ typedef long double ld;
 
 using namespace std;
 
-ld dot_product(const vector<ld> &v1, const vector<ld> &v2) {
+inline ld dot_product(const vector<ld> &v1, const vector<ld> &v2) {
     ld result = 0;
 
     for (ll i = 0; i < (ll) v1.size(); ++i) {

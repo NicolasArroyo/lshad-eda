@@ -8,12 +8,12 @@ using namespace std;
 
 class LSHAD {
   HashTables *hasher;
-  unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash;
+  unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash;
   //unordered_map<pair<ll, vector<vector<ld>>>, ld> estPerHash;
   ld threshold;
 
 public:
-  LSHAD(): hasher(nullptr), estPerHash(unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual>()), threshold(0){}
+  LSHAD(): hasher(nullptr), estPerHash(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual>()), threshold(0){}
   ~LSHAD(){
     delete hasher;
   }
@@ -108,7 +108,7 @@ public:
 
   bool detection_phase(const vector<ld> point) {
     // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
-    vector<InnerMap> hashes;
+    vector<InnerHash> hashes;
     ld estimator = 0;
 
     for (const auto& hash: hashes) {
