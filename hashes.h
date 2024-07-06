@@ -8,17 +8,15 @@ typedef long long ll;
 typedef long double ld;
 
 using namespace std;
-using InnerMap = unordered_map<ll, vector<vector<ld>>>;
+using InnerHash = pair<ll, vector<vector<ld>>>;
 
 struct InnerMapHash {
-  size_t operator()(const InnerMap& innerMap) const {
+  size_t operator()(const InnerHash& innerHash) const {
     size_t hashValue = 0;
     std::hash<ll> hashFn1;
     std::hash<ld> hashFn2;
 
-    for (const auto& pair : innerMap) {
-      hashValue ^= hashFn1(pair.first) ^ (hashVectors(pair.second) << 1);
-    }
+    hashValue ^= hashFn1(innerHash.first) ^ (hashVectors(innerHash.second) << 1);
 
     return hashValue;
   }
@@ -38,10 +36,11 @@ private:
 
 // Función de comparación de igualdad personalizada para InnerMap
 struct InnerMapEqual {
-  bool operator()(const InnerMap& lhs, const InnerMap& rhs) const {
+  bool operator()(const InnerHash& lhs, const InnerHash& rhs) const {
     return lhs == rhs;
   }
 };
+
 
 struct VectorHash {
   size_t operator()(const vector<ld>& v) const {

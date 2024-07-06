@@ -146,9 +146,10 @@ public:
       return neighbors.size() - 1;
     }
 
-    unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> HashAndEstimatePerHash(const vector<vector<ld>> &data) {
+    unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> HashAndEstimatePerHash(const vector<vector<ld>> &data) {
         // Unordered map personalized for mapping each hash table to its estimator
-        unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash;
+
+        unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash;
 
         //Hashing the data points
         for (ll i = 0; i < (ll) data.size(); ++i) {
@@ -157,11 +158,11 @@ public:
         
         // Generating the estimator for each hash table
         for (const auto& table: tables) {
-            ld EA = 0, EB = 0;
+            ld EA = 0.0, EB = 0.0;
 
             for (const auto& bucket : table) {
                 // Calculating the number of elements in the bucket
-                EA += bucket.second.size();
+                EA = bucket.second.size();
                 
                 // Calculating the number of neighbors of each element in the bucket
                 for (const auto& point : bucket.second) {
@@ -170,12 +171,7 @@ public:
                 }
                 // Computing the EB estimator
                 EB = EB / EA;
-            }
-
-            if (EB != 0) {
-                ld EC = EA / EB;
-                // Mapping the hash table to its estimator
-                estPerHash[table] = EC;
+                estPerHash[make_pair(bucket.first, bucket.second)] = EA / EB;
             }
         }
 

@@ -9,7 +9,9 @@ using namespace std;
 class LSHAD {
   HashTables *hasher;
   unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash;
+  //unordered_map<pair<ll, vector<vector<ld>>>, ld> estPerHash;
   ld threshold;
+
 public:
   LSHAD(): hasher(nullptr), estPerHash(unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual>()), threshold(0){}
   ~LSHAD(){
@@ -80,14 +82,13 @@ public:
     hasher = new HashTables(L, T, w);
 
     // Hashing the data points and computing the dictionary with the estimators per hash
-    unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash = hasher->HashAndEstimatePerHash(data);
+    unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash = hasher->HashAndEstimatePerHash(data);
 
     // Computing the threshold for the anomaly detection using the estimators calculated
     threshold = findThreshold(estPerHash, anomalyRatio);
   }
 
-  ld findThreshold(unordered_map<InnerMap, ld, InnerMapHash, InnerMapEqual> estPerHash, ll anomalyRatio){
-    //threshold <- 0
+  ld findThreshold(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash, ll anomalyRatio){
     ld threshold = 0;
     
     vector<ld> estimates;
@@ -100,7 +101,7 @@ public:
     sort(estimates.begin(), estimates.end());
     
     // Get the estimator that corresponds to the anomaly ratio
-    size_t index = static_cast<size_t>((1 - anomalyRatio) * estimates.size());
+    size_t index = static_cast<size_t>(anomalyRatio * estimates.size());
 
     return estimates[index];
   }
@@ -117,3 +118,4 @@ public:
     return estimator < threshold;
   }
 };
+
