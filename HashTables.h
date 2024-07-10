@@ -200,6 +200,34 @@ public:
 
         return results;
     }
+
+
+    vector<InnerHash> search_tables(const vector<ld> &x) {
+      vector<InnerHash> results;
+
+      cout << "Cantidad de tablas: " << T << "\n";
+      // For each of the T hash tables...
+      for (ll t = 0; t < T; ++t) {
+          // Generates a hash function made of L random projections...
+          vector<ll> hash_value = HashFunction::generate_hash_function(x, w, L);
+
+          // Collects all data points that shares the same bucket as our query data point...
+          for (ll l = 0; l < L; ++l) {
+            if (tables[t].find(hash_value[l]) != tables[t].end()) {
+              results.emplace_back(hash_value[l], tables[t][hash_value[l]]);
+                // results.emplace_back(results.end(), tables[t][hash_value[l]].begin(), tables[t][hash_value[l]].end());
+            }
+          }
+      }
+
+    sort(results.begin(), results.end(), [](const InnerHash &a, const InnerHash &b) {
+        return a.first < b.first;});
+
+    results.erase(unique(results.begin(), results.end(), [](const InnerHash &a, const InnerHash &b) {
+        return a.first == b.first;}), results.end());
+
+    return results;
+    }
 };
 
 #endif //LSHAD_EDA_HASHTABLES_H

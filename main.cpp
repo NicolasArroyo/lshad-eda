@@ -79,7 +79,7 @@ void writePointsToFile(const vector<vector<ld>>& data, const string& filename) {
 }
 
 void testLSHATrain(LSHAD &lshad) {
-  int numPoints = 100;
+  int numPoints = 20;
   int numClosePoints = numPoints * 0.9;
   int numFarPoints = numPoints - numClosePoints;
   vector<vector<ld>> data;

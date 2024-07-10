@@ -108,10 +108,12 @@ public:
 
   bool detection_phase(const vector<ld> point) {
     // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
-    vector<InnerHash> hashes;
+    vector<InnerHash> hashes = hasher->search_tables(point);
+    cout << "hashes.size(): " << hashes.size() << endl;
     ld estimator = 0;
 
     for (const auto& hash: hashes) {
+      cout << "-> " << estPerHash[hash] << endl;
         estimator += estPerHash[hash];
     }
 
