@@ -78,7 +78,7 @@ void writePointsToFile(const vector<vector<ld>>& data, const string& filename) {
 }
 
 void testLSHATrain(LSHAD &lshad) {
-  int numPoints = 50;
+  int numPoints = 99;
   int numClosePoints = numPoints * 0.9;
   int numFarPoints = numPoints - numClosePoints;
   vector<vector<ld>> data;
@@ -86,23 +86,24 @@ void testLSHATrain(LSHAD &lshad) {
   for (int i = 0; i < numClosePoints; ++i) {
     closePoints.push_back(generatePointInRange(-10.0, 10.0));
   }
-  vector<vector<ld>> farPoints;
-  for (int i = 0; i < numFarPoints; ++i) {
-    farPoints.push_back(generatePointInTwoRanges(-100.0, -50.0, 50.0, 100.0));
-  }
+  // vector<vector<ld>> farPoints;
+  // for (int i = 0; i < numFarPoints; ++i) {
+  //   farPoints.push_back(generatePointInTwoRanges(-100.0, -50.0, 50.0, 100.0));
+  // }
 
   data.insert(data.end(), closePoints.begin(), closePoints.end());
-  data.insert(data.end(), farPoints.begin(), farPoints.end());
+  vector<ld> query1 = data[0];
+  data.push_back({10000000.21, 141242141.0, 24124243.0});
+  // data.insert(data.end(), farPoints.begin(), farPoints.end());
 
   random_device rd;
   mt19937 g(rd());
   shuffle(data.begin(), data.end(), g);
 
   writePointsToFile(data, "points.txt");
-  lshad.train(data, (ld) 0.1);
+  lshad.train(data, (ld) 0.01);
 
-  vector<ld> query1 = {1.0, 2.0, 3.0};
-  vector<ld> query2 = {1000.0, 2000.0, 3000.0};
+  vector<ld> query2 = {10000000.21, 141242141.0, 24124243.0};
 
   cout << lshad.detection_phase(query1) << endl;
   cout << lshad.detection_phase(query2) << endl;

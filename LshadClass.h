@@ -9,7 +9,6 @@ using namespace std;
 class LSHAD {
   HashTables *hasher;
   unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash;
-  // unordered_map<vector<ll>, ld> estPerHash;
   ld threshold;
 
 public:
@@ -100,26 +99,31 @@ public:
 
     // Computing the threshold for the anomaly detection using the estimators calculated
     threshold = findThreshold(estPerHash, anomalyRatio);
-
+    
     cout << "Threshold: " << threshold << endl;
   }
 
   ld findThreshold(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash, ll anomalyRatio){
-    ld threshold = 0;
     
-    vector<ld> estimates;
+    vector<ld> estimators;
     // Get all the estimators from the hash tables in a list
-    for (const auto& est : estPerHash) {
-      estimates.push_back(est.second);
+    
+    for (auto point: this->hasher->getHashesPerPoints()){
+      ld sum = 0;
+      for(auto hash: point){
+        sum += estPerHash[hash];
+      }
+      estimators.push_back(sum);
     }
-
-    // Sort the estimators
-    sort(estimates.begin(), estimates.end());
+    sort(estimators.begin(), estimators.end());
     
     // Get the estimator that corresponds to the anomaly ratio
-    size_t index = static_cast<size_t>((1 - anomalyRatio) * estimates.size());
-
-    return estimates[index];
+    ld index = static_cast<size_t>(estimators.size()) * anomalyRatio;
+    
+    if (index > estimators.size() - 1) {
+      index = estimators.size() - 1;
+    }
+    return estimators[index];
   }
   
   bool detection_phase(const vector<ld> point) {
@@ -130,10 +134,16 @@ public:
 
     for (const auto& hash: hashes) {
       // cout << "-> " << estPerHash[hash] << endl;
-        estimator += estPerHash[hash];
+      estimator += estPerHash[hash];
     }
 
-    return estimator < threshold;
+    cout << "Point: ";
+    for(auto i: point){
+      cout << i << " ";
+    }
+    cout << "Estimator: " << estimator << endl;
+
+    return estimator <= threshold;
   }
 };
 

@@ -84,6 +84,8 @@ private:
   // Vector of L random projections for each hash table
   vector<vector<pair<vector<ld>, ld>>> random_projections;
 
+  vector<vector<vector<ll>>> hashes_per_points;
+
   // L: Number of random projections for each hash function
   // T: Number of hash tables
   // Size of the quantization bins used for the random projections
@@ -106,26 +108,30 @@ public:
     return tables;
   }
 
+  const vector<vector<vector<ll>>> &getHashesPerPoints() const {
+    return hashes_per_points;
+  }
+
   void print() {
-    // int idx = 0;
-    // for(auto table : tables) {
-    //   cout << "\n------- Table: " << idx++ << "-------" << endl;
-    //   for(auto bucket : table) {
-    //     cout << "Bucket: ";
-    //     for (auto hash : bucket.first) {
-    //       cout << hash << " ";
-    //     }
-    //     cout << ": " << endl;
-    //     for(auto point : bucket.second) {
-    //       cout << "[";
-    //       for(auto coord : point) {
-    //         cout << coord << " ";
-    //       }
-    //       cout << "]" << endl;
-    //     }
-    //     cout << endl;
-    //   }
-    // }
+    int idx = 0;
+    for(auto table : tables) {
+      cout << "\n------- Table: " << idx++ << "-------" << endl;
+      for(auto bucket : table) {
+        cout << "Bucket: ";
+        for (auto hash : bucket.first) {
+          cout << hash << " ";
+        }
+        cout << ": " << endl;
+        for(auto point : bucket.second) {
+          cout << "[";
+          for(auto coord : point) {
+            cout << coord << " ";
+          }
+          cout << "]" << endl;
+        }
+        cout << endl;
+      }
+    }
   }
 
   vector<ll> hash(const vector<ld> &x, const ll t){
@@ -140,9 +146,11 @@ public:
 
   void insert(const vector<ld> &x) {
     // For each of the T hash tables...
+    vector<vector<ll>> hashes_per_point;
     for (ll t = 0; t < T; ++t) {
       // Generates the hash value based on the L random projections of the table
       vector<ll> hash_value = hash(x, t);
+      hashes_per_point.push_back(hash_value);
 
       // And inserts the data point in the corresponding bucket
       auto bucket = tables[t].find(hash_value);
@@ -152,6 +160,7 @@ public:
         bucket->second.push_back(x);
       }
     }
+    hashes_per_points.push_back(hashes_per_point);
   }
 
   // Gets the total number of buckets in the hash tables and the sum of the sizes of all buckets
