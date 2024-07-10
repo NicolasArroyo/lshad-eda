@@ -96,7 +96,7 @@ public:
     estPerHash = hasher->HashAndEstimatePerHash(data);
     cout << "Hasher size: " << hasher->getTables().size() << endl;
     // hasher->print();
-    print_EstPerHash();
+    // print_EstPerHash();
 
     // Computing the threshold for the anomaly detection using the estimators calculated
     threshold = findThreshold(estPerHash, anomalyRatio);
@@ -122,7 +122,6 @@ public:
     return estimates[index];
   }
   
-  /*
   bool detection_phase(const vector<ld> point) {
     // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
     vector<InnerHash> hashes = hasher->search_tables(point);
@@ -130,12 +129,11 @@ public:
     ld estimator = 0;
 
     for (const auto& hash: hashes) {
-      cout << "-> " << estPerHash[hash] << endl;
+      // cout << "-> " << estPerHash[hash] << endl;
         estimator += estPerHash[hash];
     }
 
     return estimator < threshold;
   }
-  */
 };
 

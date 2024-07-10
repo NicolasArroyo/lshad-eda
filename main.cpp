@@ -78,7 +78,7 @@ void writePointsToFile(const vector<vector<ld>>& data, const string& filename) {
 }
 
 void testLSHATrain(LSHAD &lshad) {
-  int numPoints = 20;
+  int numPoints = 50;
   int numClosePoints = numPoints * 0.9;
   int numFarPoints = numPoints - numClosePoints;
   vector<vector<ld>> data;
@@ -104,8 +104,8 @@ void testLSHATrain(LSHAD &lshad) {
   vector<ld> query1 = {1.0, 2.0, 3.0};
   vector<ld> query2 = {1000.0, 2000.0, 3000.0};
 
-  // cout << lshad.detection_phase(query1) << endl;
-  // cout << lshad.detection_phase(query2) << endl;
+  cout << lshad.detection_phase(query1) << endl;
+  cout << lshad.detection_phase(query2) << endl;
 
   // 0.1
   //   tuple<ll, ll, ld> hyperparameters = lshad.tuneHyperparameters(data);
@@ -162,10 +162,10 @@ void testEstPerHash() {
 int main() {
   // testHashTables();
   // testLSHADHyperparametersAutotuning();
-  testEstPerHash();
-  // LSHAD lshad;
-  //
-  // testLSHATrain(lshad);
+  // testEstPerHash();
+  LSHAD lshad;
+
+  testLSHATrain(lshad);
 
   return 0;
 }

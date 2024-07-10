@@ -107,25 +107,25 @@ public:
   }
 
   void print() {
-    int idx = 0;
-    for(auto table : tables) {
-      cout << "\n------- Table: " << idx++ << "-------" << endl;
-      for(auto bucket : table) {
-        cout << "Bucket: ";
-        for (auto hash : bucket.first) {
-          cout << hash << " ";
-        }
-        cout << ": " << endl;
-        for(auto point : bucket.second) {
-          cout << "[";
-          for(auto coord : point) {
-            cout << coord << " ";
-          }
-          cout << "]" << endl;
-        }
-        cout << endl;
-      }
-    }
+    // int idx = 0;
+    // for(auto table : tables) {
+    //   cout << "\n------- Table: " << idx++ << "-------" << endl;
+    //   for(auto bucket : table) {
+    //     cout << "Bucket: ";
+    //     for (auto hash : bucket.first) {
+    //       cout << hash << " ";
+    //     }
+    //     cout << ": " << endl;
+    //     for(auto point : bucket.second) {
+    //       cout << "[";
+    //       for(auto coord : point) {
+    //         cout << coord << " ";
+    //       }
+    //       cout << "]" << endl;
+    //     }
+    //     cout << endl;
+    //   }
+    // }
   }
 
   vector<ll> hash(const vector<ld> &x, const ll t){
@@ -243,34 +243,26 @@ public:
     return results;
   }
 
-  /*
   vector<InnerHash> search_tables(const vector<ld> &x) {
     vector<InnerHash> results;
 
     cout << "Cantidad de tablas: " << T << "\n";
-    // For each of the T hash tables...
     for (ll t = 0; t < T; ++t) {
-      // Generates a hash function made of L random projections...
-      vector<ll> hash_value = HashFunction::generate_hash_function(x, w, L);
+      vector<ll> hash_value = hash(x, t);
 
-      // Collects all data points that shares the same bucket as our query data point...
       for (ll l = 0; l < L; ++l) {
-        if (tables[t].find(hash_value[l]) != tables[t].end()) {
-          results.emplace_back(hash_value[l], tables[t][hash_value[l]]);
-          // results.emplace_back(results.end(), tables[t][hash_value[l]].begin(), tables[t][hash_value[l]].end());
+        auto it = tables[t].find(hash_value);
+        if (it != tables[t].end()) {
+          results.push_back(it->first);
         }
       }
     }
 
-    sort(results.begin(), results.end(), [](const InnerHash &a, const InnerHash &b) {
-      return a.first < b.first;});
-
-    results.erase(unique(results.begin(), results.end(), [](const InnerHash &a, const InnerHash &b) {
-      return a.first == b.first;}), results.end());
+    sort(results.begin(), results.end());
+    results.erase(unique(results.begin(), results.end()), results.end());
 
     return results;
   }
-  */
 };
 
 #endif //LSHAD_EDA_HASHTABLES_H
