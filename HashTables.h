@@ -95,6 +95,27 @@ public:
         tables.resize(T);
     }
 
+    const vector<unordered_map<ll, vector<vector<ld>>>> &getTables() const {
+        return tables;
+    }
+
+    void print() {
+      int idx = 0;
+      for(auto table : tables) {
+        cout << "\n------- Table: " << idx++ << "-------" << endl;
+        for(auto bucket : table) {
+          cout << "Bucket: " << bucket.first << endl;
+          for(auto point : bucket.second) {
+            cout << "Point: ";
+            for(auto coord : point) {
+              cout << coord << " ";
+            }
+            cout << endl;
+          }
+        }
+      }
+    }
+
     // Gets the total number of buckets in the hash tables and the sum of the sizes of all buckets
     pair<ll, ll> getNumberBucketsAndSumBucketSizes() {
         ll numberBuckets = 0;

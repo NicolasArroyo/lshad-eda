@@ -8,27 +8,23 @@ typedef long long ll;
 typedef long double ld;
 
 using namespace std;
-using InnerHash = pair<ll, vector<vector<ld>>>;
+using InnerHash = vector<ll>;
 
 struct InnerMapHash {
   size_t operator()(const InnerHash& innerHash) const {
     size_t hashValue = 0;
-    std::hash<ll> hashFn1;
-    std::hash<ld> hashFn2;
 
-    hashValue ^= hashFn1(innerHash.first) ^ (hashVectors(innerHash.second) << 1);
+    hashValue = hashVectors(innerHash);
 
     return hashValue;
   }
 
 private:
-  size_t hashVectors(const vector<vector<ld>>& vec) const {
+  size_t hashVectors(const vector<ll>& vec) const {
     size_t hashValue = 0;
     std::hash<ld> hashFn;
-    for (const auto& innerVec : vec) {
-      for (const auto& element : innerVec) {
-        hashValue ^= hashFn(element);
-      }
+    for (ll i : vec) {
+      hashValue ^= hashFn(i) + 0x9e3779b9 + (hashValue << 6) + (hashValue >> 2);
     }
     return hashValue;
   }

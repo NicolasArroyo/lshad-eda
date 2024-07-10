@@ -1,5 +1,5 @@
 #pragma once
-#include "HashTables.h"
+#include "HashTables2.h"
 #include "hashes.h"
 #include <unordered_map>
 #include <tuple>
@@ -9,11 +9,11 @@ using namespace std;
 class LSHAD {
   HashTables *hasher;
   unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash;
-  //unordered_map<pair<ll, vector<vector<ld>>>, ld> estPerHash;
+  // unordered_map<vector<ll>, ld> estPerHash;
   ld threshold;
 
 public:
-  LSHAD(): hasher(nullptr), estPerHash(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual>()), threshold(0){}
+  LSHAD(): hasher(nullptr), threshold(0){}
   ~LSHAD(){
     delete hasher;
   }
@@ -21,7 +21,7 @@ public:
   ld hashGroupAndCount(const vector<vector<ld>> data, ll L, ll T, ld wCandidate) {
     ld averageBucketSize;
 
-    HashTables *tempHasher = new HashTables(L, T, wCandidate);
+    HashTables *tempHasher = new HashTables(L, T, wCandidate, data[0].size());
     for (const auto& vec: data) {
         tempHasher->insert(vec);
     }
@@ -71,21 +71,37 @@ public:
     return make_tuple(L, T, wCandidate);
   }
 
+  void print_EstPerHash(){
+    for (const auto& est : estPerHash) {
+      cout << "Hash: ";
+      for (ll i : est.first) {
+        cout << i << " ";
+      }
+      cout << "Estimator: " << est.second << endl;
+    }
+  }
+
   // Training phase of the LSHAD algorithm
   void train(const vector<vector<ld>> data, ld anomalyRatio){
     tuple<ll, ll, ld> hyperparameters = tuneHyperparameters(data);
     ll L = get<0>(hyperparameters);
     ll T = get<1>(hyperparameters);
     ld w = get<2>(hyperparameters);
+    cout << "L: " << L << " T: " << T << " w: " << w << endl;
 
     // Hasher of L * T hyperplanes generated for hashing the data points
-    hasher = new HashTables(L, T, w);
-
+    hasher = new HashTables(L, T, w, data[0].size());
+    
     // Hashing the data points and computing the dictionary with the estimators per hash
-    unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash = hasher->HashAndEstimatePerHash(data);
+    estPerHash = hasher->HashAndEstimatePerHash(data);
+    cout << "Hasher size: " << hasher->getTables().size() << endl;
+    // hasher->print();
+    print_EstPerHash();
 
     // Computing the threshold for the anomaly detection using the estimators calculated
     threshold = findThreshold(estPerHash, anomalyRatio);
+
+    cout << "Threshold: " << threshold << endl;
   }
 
   ld findThreshold(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash, ll anomalyRatio){
@@ -101,11 +117,12 @@ public:
     sort(estimates.begin(), estimates.end());
     
     // Get the estimator that corresponds to the anomaly ratio
-    size_t index = static_cast<size_t>(anomalyRatio * estimates.size());
+    size_t index = static_cast<size_t>((1 - anomalyRatio) * estimates.size());
 
     return estimates[index];
   }
-
+  
+  /*
   bool detection_phase(const vector<ld> point) {
     // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
     vector<InnerHash> hashes = hasher->search_tables(point);
@@ -119,5 +136,6 @@ public:
 
     return estimator < threshold;
   }
+  */
 };
 

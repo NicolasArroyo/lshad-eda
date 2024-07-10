@@ -2,7 +2,7 @@
 #include <vector>
 #include <random>
 #include <fstream>
-#include "HashTables.h"
+#include "HashTables2.h"
 #include "LshadClass.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ void testHashTables() {
     ll T = 50;
     ld w = 5;
 
-    HashTables hashTable(L, T, w);
+    HashTables hashTable(L, T, w, 3);
 
     vector<vector<ld>> vectors = {
             {1.0,   2.0,   3.0},
@@ -28,7 +28,7 @@ void testHashTables() {
     }
 
     vector<ld> query = {1.05, 2.05, 3.05};
-    vector<vector<ld>> results = hashTable.search(query);
+    unordered_set<vector<ld>, VectorHash, VectorEqual> results = hashTable.search(query);
 
     cout << "Nearby vectors:" << endl;
 
@@ -39,7 +39,6 @@ void testHashTables() {
             cout << res[i];
             if (i < res.size() - 1) cout << ", ";
         }
-
         cout << "]" << endl;
     }
 
@@ -105,8 +104,8 @@ void testLSHATrain(LSHAD &lshad) {
   vector<ld> query1 = {1.0, 2.0, 3.0};
   vector<ld> query2 = {1000.0, 2000.0, 3000.0};
 
-  cout << lshad.detection_phase(query1) << endl;
-  cout << lshad.detection_phase(query2) << endl;
+  // cout << lshad.detection_phase(query1) << endl;
+  // cout << lshad.detection_phase(query2) << endl;
 
   // 0.1
   //   tuple<ll, ll, ld> hyperparameters = lshad.tuneHyperparameters(data);
@@ -141,12 +140,32 @@ void testLSHADHyperparametersAutotuning() {
     cout << "w: " << get<2>(hyperparameters) << endl;
 }
 
+void testEstPerHash() {
+  vector<vector<ld>> data = {
+    {1.0,   2.0,   3.0},
+    {1.1,   2.1,   3.1},
+    {1.0,  2.0,  3.1},
+    {10.1,  20.1,  30.1},
+    {15.0, 25.0, 26.0},
+    {15.1, 25.1, 27.0},
+    {50.0, 40.0, 30.0},
+    {9.1, 7.1, 10.1},
+    {16.0, 15.0, 27.0},
+    {21.1, 12.1, 35.5},
+    {100000.0, 200000.0, 300000.0},
+    {100000.1, 200000.1, 300000.1}
+  };
+  LSHAD lshad;
+  lshad.train(data, (ld) 0.1);
+}
+
 int main() {
   // testHashTables();
   // testLSHADHyperparametersAutotuning();
-  LSHAD lshad;
-
-  testLSHATrain(lshad);
+  testEstPerHash();
+  // LSHAD lshad;
+  //
+  // testLSHATrain(lshad);
 
   return 0;
 }
