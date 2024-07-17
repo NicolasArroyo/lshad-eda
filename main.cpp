@@ -93,7 +93,7 @@ void testLSHATrain(LSHAD &lshad) {
 
   data.insert(data.end(), closePoints.begin(), closePoints.end());
   vector<ld> query1 = data[0];
-  data.push_back({10000000.21, 141242141.0, 24124243.0});
+  data.push_back({50, 50, 50});
   // data.insert(data.end(), farPoints.begin(), farPoints.end());
 
   random_device rd;
@@ -103,7 +103,7 @@ void testLSHATrain(LSHAD &lshad) {
   writePointsToFile(data, "points.txt");
   lshad.train(data, (ld) 0.01);
 
-  vector<ld> query2 = {10000000.21, 141242141.0, 24124243.0};
+  vector<ld> query2 = {50, 50, 50};
 
   cout << lshad.detection_phase(query1) << endl;
   cout << lshad.detection_phase(query2) << endl;

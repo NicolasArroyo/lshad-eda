@@ -255,7 +255,7 @@ public:
   vector<InnerHash> search_tables(const vector<ld> &x) {
     vector<InnerHash> results;
 
-    cout << "Cantidad de tablas: " << T << "\n";
+    // cout << "Cantidad de tablas: " << T << "\n";
     for (ll t = 0; t < T; ++t) {
       vector<ll> hash_value = hash(x, t);
 

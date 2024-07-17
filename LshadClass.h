@@ -82,6 +82,7 @@ public:
 
   // Training phase of the LSHAD algorithm
   void train(const vector<vector<ld>> data, ld anomalyRatio){
+    // std::cout << std::setprecision(20);
     tuple<ll, ll, ld> hyperparameters = tuneHyperparameters(data);
     ll L = get<0>(hyperparameters);
     ll T = get<1>(hyperparameters);
@@ -98,27 +99,41 @@ public:
     // print_EstPerHash();
 
     // Computing the threshold for the anomaly detection using the estimators calculated
-    threshold = findThreshold(estPerHash, anomalyRatio);
+    threshold = findThreshold(estPerHash, anomalyRatio,data);
     
     cout << "Threshold: " << threshold << endl;
   }
 
-  ld findThreshold(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash, ll anomalyRatio){
+  ld findThreshold(unordered_map<InnerHash, ld, InnerMapHash, InnerMapEqual> estPerHash, ld anomalyRatio, vector<vector<ld>>data){
     
     vector<ld> estimators;
     // Get all the estimators from the hash tables in a list
-    
-    for (auto point: this->hasher->getHashesPerPoints()){
-      ld sum = 0;
-      for(auto hash: point){
-        sum += estPerHash[hash];
+    for (auto point:data){
+      vector<InnerHash> hashes = hasher->search_tables(point);
+
+      ld estimator = 0;
+      for (const auto &hash : hashes)
+      {
+        estimator += estPerHash[hash];
       }
-      estimators.push_back(sum);
+
+      // cout<< point[0] << " "  << point[1] << " " << point[2] << ":     " << estimator << endl;
+      estimators.push_back(estimator);
     }
+
+    // for (auto point: this->hasher->getHashesPerPoints()){
+    //   ld sum = 0;
+    //   for(auto hash: point){
+    //     sum += estPerHash[hash];
+    //   }
+    //   estimators.push_back(sum);
+    // }
+
     sort(estimators.begin(), estimators.end());
     
     // Get the estimator that corresponds to the anomaly ratio
     ld index = static_cast<size_t>(estimators.size()) * anomalyRatio;
+    index = round(index);
     
     if (index > estimators.size() - 1) {
       index = estimators.size() - 1;
@@ -127,6 +142,7 @@ public:
   }
   
   bool detection_phase(const vector<ld> point) {
+    // std::cout << std::setprecision(20);
     // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
     vector<InnerHash> hashes = hasher->search_tables(point);
     cout << "hashes.size(): " << hashes.size() << endl;
