@@ -86,27 +86,37 @@ void testLSHATrain(LSHAD &lshad) {
   for (int i = 0; i < numClosePoints; ++i) {
     closePoints.push_back(generatePointInRange(-10.0, 10.0));
   }
-  // vector<vector<ld>> farPoints;
-  // for (int i = 0; i < numFarPoints; ++i) {
-  //   farPoints.push_back(generatePointInTwoRanges(-100.0, -50.0, 50.0, 100.0));
-  // }
+  vector<vector<ld>> farPoints;
+  for (int i = 0; i < numFarPoints; ++i) {
+    farPoints.push_back(generatePointInTwoRanges(-100.0, -50.0, 50.0, 100.0));
+  }
 
   data.insert(data.end(), closePoints.begin(), closePoints.end());
   vector<ld> query1 = data[0];
-  data.push_back({50, 50, 50});
-  // data.insert(data.end(), farPoints.begin(), farPoints.end());
+  // data.push_back({50, 50, 50});
+  data.insert(data.end(), farPoints.begin(), farPoints.end());
 
   random_device rd;
   mt19937 g(rd());
   shuffle(data.begin(), data.end(), g);
 
   writePointsToFile(data, "points.txt");
-  lshad.train(data, (ld) 0.01);
+  lshad.train(data, (ld) 0.1);
 
   vector<ld> query2 = {50, 50, 50};
 
-  cout << lshad.detection_phase(query1) << endl;
-  cout << lshad.detection_phase(query2) << endl;
+  cout << "\nclose points: " << endl;
+  for(auto point: closePoints) {
+    cout << lshad.detection_phase(point) << endl;
+  }
+
+  cout << "\nfar points: " << endl;
+  for(auto point: farPoints) {
+    cout << lshad.detection_phase(point) << endl;
+  }
+
+  // cout << lshad.detection_phase(query1) << endl;
+  // cout << lshad.detection_phase(query2) << endl;
 
   // 0.1
   //   tuple<ll, ll, ld> hyperparameters = lshad.tuneHyperparameters(data);
@@ -124,11 +134,11 @@ void testLSHADHyperparametersAutotuning() {
             {10.1,  20.1,  30.1},
             {100.0, 200.0, 300.0},
             {100.1, 200.1, 300.1},
-            {1000.0, 2000.0, 3000.0},
-            {1000.1, 2000.1, 3000.1},
-            {10000.0, 20000.0, 30000.0},
-            {10000.1, 20000.1, 30000.1},
-            {100000.0, 200000.0, 300000.0},
+            {100.0, 200.0, 303.0},
+            {100.1, 210.1, 300.1},
+            {50.0, 50.0, 40.0},
+            {45.1, 45.1, 45.1},
+            {45.0, 45.0, 45.0},
             {100000.1, 200000.1, 300000.1}
     };
 
@@ -167,6 +177,7 @@ int main() {
   LSHAD lshad;
 
   testLSHATrain(lshad);
+  // testEstPerHash();
 
   return 0;
 }

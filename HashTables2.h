@@ -178,7 +178,7 @@ public:
     return make_pair(numberBuckets, sumBucketSizes);
   }
 
-  ll countNeighbors(const vector<ld> &point){
+  ld countNeighbors(const vector<ld> &point){
     ll count = 0;
 
     // Using a set to store the neighbors without duplicates
@@ -188,15 +188,27 @@ public:
     for (const auto &table: tables){
       // Go through all the buckets in the hash table
       for (const auto& bucket : table) {
-        // Find the point in the bucket
         auto finded = find(bucket.second.begin(), bucket.second.end(), point);
-        // If the point is in the bucket, insert all the points in the bucket in the neighbors set
         if(finded != bucket.second.end()){
           neighbors.insert(bucket.second.begin(), bucket.second.end());
         }
       }
     }
 
+    // cout << "\tNeighbors: ";
+    // for(auto p: point){
+    //   cout << p << ", ";
+    // }
+    // cout << endl;
+    // for(auto n : neighbors){
+    //   cout << "\t[";
+    //   for(auto l : n){
+    //     cout << l << ", ";
+    //   }
+    //   cout << "]" << endl;
+    // }
+    // cout << "Neighbors size: " << neighbors.size() << endl;
+    // cout << endl;
     // Return the number of neighbors
     return neighbors.size() - 1;
   }
@@ -213,20 +225,35 @@ public:
 
     // Generating the estimator for each hash table
     for (const auto& table: tables) {
-      ld EA = 0.0, EB = 0.0;
 
       for (const auto& bucket : table) {
         // Calculating the number of elements in the bucket
+        ld EA = 0.0, EB = 0.0;
         EA = bucket.second.size();
+        // cout << "\n------------------------------" << endl;
+        // cout << "Bucket: ";
+        // for(auto l : bucket.first){
+        //   cout << l << " ";
+        // }
+        // cout << endl;
+        // print_bucket(bucket.second);
 
         // Calculating the number of neighbors of each element in the bucket
         for (const auto& point : bucket.second) {
-          ll neighborCount = countNeighbors(point);
+          ld neighborCount = countNeighbors(point);
+          // cout << "neighborCount: " << neighborCount << endl;
+          // cout << "Prev EB: " << EB << endl;
           EB += neighborCount;
+          // cout << "EB: " << EB << endl;
         }
         // Computing the EB estimator
+        // cout << "neighborCountTotal: " << EB << endl;
         EB = EB / EA;
-        estPerHash[bucket.first] = EB > 0 ? EA / EB : 0;
+        // cout << "EA: " << EA << " EB: " << EB << endl;
+        estPerHash[bucket.first] = EB > 0.0 ? EA / EB : 0.0;
+        // estPerHash[bucket.first] = EB;
+        // cout << "Estimator: " << estPerHash[bucket.first] << endl;
+        // cout << "------------------------------" << endl;
       }
     }
 
@@ -271,6 +298,34 @@ public:
     results.erase(unique(results.begin(), results.end()), results.end());
 
     return results;
+  }
+
+  void print_bucket(const vector<vector<ld>> &bucket) {
+    for (const auto &point : bucket) {
+      cout << "[";
+      for (ll j = 0; j < DIM; ++j) {
+        cout << point[j];
+        if (j < DIM - 1) cout << ", ";
+      }
+      cout << "]" << endl;
+    }
+  }
+
+  void print_hash_buscket(const vector<ll> &hash) {
+    for (ll i = 0; i < T; ++i) {
+      auto it = tables[i].find(hash);
+      if (it != tables[i].end()) {
+        cout << "Table: " << i << endl;
+        for (const auto &point : it->second) {
+          cout << "[";
+          for (ll j = 0; j < DIM; ++j) {
+            cout << point[j];
+            if (j < DIM - 1) cout << ", ";
+          }
+          cout << "]" << endl;
+        }
+      }
+    }
   }
 };
 

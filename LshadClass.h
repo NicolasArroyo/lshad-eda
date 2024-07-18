@@ -72,11 +72,15 @@ public:
 
   void print_EstPerHash(){
     for (const auto& est : estPerHash) {
+      cout << "\n-----------------------------------------------" << endl;
       cout << "Hash: ";
       for (ll i : est.first) {
         cout << i << " ";
       }
+      cout << ": " << endl;
+      hasher->print_hash_buscket(est.first);
       cout << "Estimator: " << est.second << endl;
+      cout << "-----------------------------------------------" << endl;
     }
   }
 
@@ -116,23 +120,34 @@ public:
       {
         estimator += estPerHash[hash];
       }
-
-      // cout<< point[0] << " "  << point[1] << " " << point[2] << ":     " << estimator << endl;
       estimators.push_back(estimator);
     }
 
+    ll idx = 0;
+
     // for (auto point: this->hasher->getHashesPerPoints()){
     //   ld sum = 0;
+    //   for(auto pointHash: data[idx]){
+    //     cout << pointHash << ", ";
+    //   }
+    //   cout << endl;
+    //   idx++;
     //   for(auto hash: point){
     //     sum += estPerHash[hash];
+    //     // cout << "Hash: ";
+    //     // for(auto i: hash){
+    //     //   cout << i << " ";
+    //     // }
+    //     // cout << "Estimator: " << estPerHash[hash] << endl;
     //   }
+    //   // cout << "Sum: " << sum << endl;
     //   estimators.push_back(sum);
     // }
 
     sort(estimators.begin(), estimators.end());
     
     // Get the estimator that corresponds to the anomaly ratio
-    ld index = static_cast<size_t>(estimators.size()) * anomalyRatio;
+    ld index = static_cast<size_t>(estimators.size() * (1-anomalyRatio));
     index = round(index);
     
     if (index > estimators.size() - 1) {
@@ -142,10 +157,12 @@ public:
   }
   
   bool detection_phase(const vector<ld> point) {
-    // std::cout << std::setprecision(20);
-    // auto hashes = hasher->getHashes(point);  TODO: Implement getHashes
     vector<InnerHash> hashes = hasher->search_tables(point);
     cout << "hashes.size(): " << hashes.size() << endl;
+    cout << "Point: ";
+    for(auto i: point){
+      cout << i << " ";
+    }
     ld estimator = 0;
 
     for (const auto& hash: hashes) {
@@ -153,13 +170,9 @@ public:
       estimator += estPerHash[hash];
     }
 
-    cout << "Point: ";
-    for(auto i: point){
-      cout << i << " ";
-    }
     cout << "Estimator: " << estimator << endl;
 
-    return estimator <= threshold;
+    return estimator >= threshold;
   }
 };
 
