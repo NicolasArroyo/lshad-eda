@@ -38,19 +38,22 @@ struct InnerMapEqual {
 };
 
 
+template <typename T>
 struct VectorHash {
-  size_t operator()(const vector<ld>& v) const {
-    std::hash<ld> hasher;
+  size_t operator()(const vector<T>& v) const {
+    std::hash<T> hasher;
     size_t seed = 0;
-    for (ld i : v) {
+    for (T i : v) {
       seed ^= hasher(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     }
     return seed;
   }
 };
 
+template <typename T>
 struct VectorEqual {
-  bool operator()(const vector<ld>& lhs, const vector<ld>& rhs) const {
+  bool operator()(const vector<T>& lhs, const vector<T>& rhs) const {
     return lhs == rhs;
   }
 };
+

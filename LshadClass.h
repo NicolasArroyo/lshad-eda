@@ -112,36 +112,62 @@ public:
     
     vector<ld> estimators;
     // Get all the estimators from the hash tables in a list
-    for (auto point:data){
-      vector<InnerHash> hashes = hasher->search_tables(point);
+  //   for (auto point:data){
+  //     for(auto pointHash: point){
+  //       cout << pointHash << ", ";
+  //     }
+  //     cout << endl;
+  //     vector<InnerHash> hashes = hasher->search_tables(point);
+  //     ld estimator = 0;
+  //     for (const auto &hash : hashes)
+  //     {
+  //       for(auto pointHash: hash){
+  //         cout << pointHash << ", ";
+  //       }
+  //       cout << endl;
+  //       hasher->print_hash_buscket(hash);
+  //       estimator += estPerHash[hash];
+  //     }
+  //     estimators.push_back(estimator);
+  //   }
+  //
 
-      ld estimator = 0;
-      for (const auto &hash : hashes)
-      {
-        estimator += estPerHash[hash];
+    auto HashesPerPoints = hasher->getHashesPerPoints();
+    for (auto point: HashesPerPoints) {
+      ld sum = 0;
+      for(auto hash: point){
+        sum += estPerHash[hash];
       }
-      estimators.push_back(estimator);
+      estimators.push_back(sum);
     }
 
-    ll idx = 0;
-
-    // for (auto point: this->hasher->getHashesPerPoints()){
-    //   ld sum = 0;
-    //   for(auto pointHash: data[idx]){
-    //     cout << pointHash << ", ";
+    // for(int i = 0; i < data.size(); i++){
+    //   cout << "\n-----------------------------------------------" << endl;
+    //   cout << "Point: ";
+    //   for(auto val: data[i]){
+    //     cout << val << ", ";
     //   }
     //   cout << endl;
-    //   idx++;
-    //   for(auto hash: point){
-    //     sum += estPerHash[hash];
-    //     // cout << "Hash: ";
-    //     // for(auto i: hash){
-    //     //   cout << i << " ";
-    //     // }
-    //     // cout << "Estimator: " << estPerHash[hash] << endl;
+    //   vector<InnerHash> hashes = hasher->search_tables(data[i]);
+    //   cout << "First form: " << endl;
+    //   for(auto hash: hashes){
+    //     cout << "Hash: ";
+    //     for(auto val: hash){
+    //       cout << val << ", ";
+    //     }
+    //     cout << "-> Estimator: " << estPerHash[hash] << endl;
+    //     // hasher->print_hash_buscket(hash);
     //   }
-    //   // cout << "Sum: " << sum << endl;
-    //   estimators.push_back(sum);
+    //   cout << "Second form: " << endl;
+    //   for(auto hash: HashesPerPoints[i]){
+    //     cout << "Hash: ";
+    //     for(auto val: hash){
+    //       cout << val << ", ";
+    //     }
+    //     cout << "-> Estimator: " << estPerHash[hash] << endl;
+    //     // hasher->print_hash_buscket(hash);
+    //   }
+    //   cout << "-----------------------------------------------" << endl;
     // }
 
     sort(estimators.begin(), estimators.end());
@@ -158,11 +184,11 @@ public:
   
   bool detection_phase(const vector<ld> point) {
     vector<InnerHash> hashes = hasher->search_tables(point);
-    cout << "hashes.size(): " << hashes.size() << endl;
-    cout << "Point: ";
-    for(auto i: point){
-      cout << i << " ";
-    }
+    // cout << "hashes.size(): " << hashes.size() << endl;
+    // cout << "Point: ";
+    // for(auto i: point){
+    //   cout << i << " ";
+    // }
     ld estimator = 0;
 
     for (const auto& hash: hashes) {
@@ -170,7 +196,7 @@ public:
       estimator += estPerHash[hash];
     }
 
-    cout << "Estimator: " << estimator << endl;
+    // cout << "Estimator: " << estimator << endl;
 
     return estimator >= threshold;
   }

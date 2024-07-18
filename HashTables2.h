@@ -84,7 +84,7 @@ private:
   // Vector of L random projections for each hash table
   vector<vector<pair<vector<ld>, ld>>> random_projections;
 
-  vector<vector<vector<ll>>> hashes_per_points;
+  vector<unordered_set<vector<ll>, VectorHash<ll>, VectorEqual<ll>>> hashes_per_points;
 
   // L: Number of random projections for each hash function
   // T: Number of hash tables
@@ -108,7 +108,7 @@ public:
     return tables;
   }
 
-  const vector<vector<vector<ll>>> &getHashesPerPoints() const {
+  const vector<unordered_set<vector<ll>, VectorHash<ll>, VectorEqual<ll>>> &getHashesPerPoints() const {
     return hashes_per_points;
   }
 
@@ -146,11 +146,11 @@ public:
 
   void insert(const vector<ld> &x) {
     // For each of the T hash tables...
-    vector<vector<ll>> hashes_per_point;
+    unordered_set<vector<ll>, VectorHash<ll>, VectorEqual<ll>> hashes_per_point;
     for (ll t = 0; t < T; ++t) {
       // Generates the hash value based on the L random projections of the table
       vector<ll> hash_value = hash(x, t);
-      hashes_per_point.push_back(hash_value);
+      hashes_per_point.insert(hash_value);
 
       // And inserts the data point in the corresponding bucket
       auto bucket = tables[t].find(hash_value);
@@ -182,7 +182,7 @@ public:
     ll count = 0;
 
     // Using a set to store the neighbors without duplicates
-    unordered_set<vector<ld>, VectorHash, VectorEqual> neighbors;
+    unordered_set<vector<ld>, VectorHash<ld>, VectorEqual<ld>> neighbors;
     neighbors.insert(point);
     // Go trough all the tables
     for (const auto &table: tables){
@@ -261,8 +261,8 @@ public:
   }
 
   // ONLY FOR TESTING PURPOSES
-  unordered_set<vector<ld>, VectorHash, VectorEqual> search(const vector<ld> &x) {
-    unordered_set<vector<ld>, VectorHash, VectorEqual> results;
+  unordered_set<vector<ld>, VectorHash<ld>, VectorEqual<ld>> search(const vector<ld> &x) {
+    unordered_set<vector<ld>, VectorHash<ld>, VectorEqual<ld>> results;
 
     // For each of the T hash tables...
     for (ll t = 0; t < T; ++t) {

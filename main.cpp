@@ -2,6 +2,7 @@
 #include <vector>
 #include <random>
 #include <fstream>
+#include <chrono>
 #include "HashTables2.h"
 #include "LshadClass.h"
 
@@ -28,7 +29,7 @@ void testHashTables() {
     }
 
     vector<ld> query = {1.05, 2.05, 3.05};
-    unordered_set<vector<ld>, VectorHash, VectorEqual> results = hashTable.search(query);
+    unordered_set<vector<ld>, VectorHash<ld>, VectorEqual<ld>> results = hashTable.search(query);
 
     cout << "Nearby vectors:" << endl;
 
@@ -101,31 +102,34 @@ void testLSHATrain(LSHAD &lshad) {
   shuffle(data.begin(), data.end(), g);
 
   writePointsToFile(data, "points.txt");
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
   lshad.train(data, (ld) 0.1);
 
   vector<ld> query2 = {50, 50, 50};
 
+  ll count_close = 0;
   cout << "\nclose points: " << endl;
   for(auto point: closePoints) {
-    cout << lshad.detection_phase(point) << endl;
+    bool isAnomaly = lshad.detection_phase(point);
+    cout << isAnomaly << endl;
+    count_close = !isAnomaly ? count_close + 1 : count_close;
   }
 
+  ll count_far = 0;
   cout << "\nfar points: " << endl;
   for(auto point: farPoints) {
-    cout << lshad.detection_phase(point) << endl;
+    bool isAnomaly = lshad.detection_phase(point);
+    cout << isAnomaly << endl;
+    count_far = isAnomaly ? count_far + 1 : count_far;
   }
 
-  // cout << lshad.detection_phase(query1) << endl;
-  // cout << lshad.detection_phase(query2) << endl;
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
-  // 0.1
-  //   tuple<ll, ll, ld> hyperparameters = lshad.tuneHyperparameters(data);
-  //
-  //   cout << "Hyperparameters: " << endl;
-  //   cout << "L: " << get<0>(hyperparameters) << endl;
-  //   cout << "T: " << get<1>(hyperparameters) << endl;
-  //   cout << "w: " << get<2>(hyperparameters) << endl;
+  cout << "Not anomaly accuracy: " << (ld) count_close / numClosePoints << endl;
+  cout << "Anomaly accuracy: " << (ld) count_far / numFarPoints << endl;
 }
+
 void testLSHADHyperparametersAutotuning() {
     vector<vector<ld>> data = {
             {1.0,   2.0,   3.0},
